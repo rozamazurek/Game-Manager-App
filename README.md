@@ -39,7 +39,6 @@ The project is designed as a personal learning project focused on modern iOS tec
 This project is under active development and may evolve over time.
 It is primarily intended for educational purposes and portfolio presentation.
 
-## Screenshots
 
 ## 📸 Screenshots
 
