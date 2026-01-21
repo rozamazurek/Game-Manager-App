@@ -1,178 +1,86 @@
 import Foundation
 import SwiftUI
+import SwiftData
 
-class MoneyViewModel:ObservableObject {
-    
-    
-    
-    @Published var debts: [Debt] = []
-    @Published var gameExpenses: [GameExpense] = []
-    @Published var settlements: [Settlement] = []
-    
-    private let debtsKey = "savedDebts"
-    private let expensesKey = "savedGameExpenses"
-    private let settlementsKey = "savedSettlements"
-    
-    init() {
-        loadDebts()
-        loadGameExpenses()
-        loadSettlements()
-    }
-    
+
+class MoneyViewModel: ObservableObject {
+
     // MARK: - Debt Management
-    
-    func addDebt(creditorId: UUID, debtorId: UUID, amount: Double, description: String, gameSessionId: UUID? = nil) {
+
+    func addDebt(creditorId: UUID, debtorId: UUID, amount: Double, description: String, gameSessionId: UUID? = nil, context: ModelContext) {
         let newDebt = Debt(
             creditorId: creditorId,
             debtorId: debtorId,
             amount: amount,
-            description: description,
+            debtDescription: description,
             gameSessionId: gameSessionId
         )
-        debts.append(newDebt)
-        saveDebts()
+        context.insert(newDebt)
+        try? context.save()
     }
-    
-    func addGameExpense(payerId: UUID, totalAmount: Double, description: String, gameType: String, participants: [UUID]) {
+
+    func addGameExpense(payerId: UUID, totalAmount: Double, description: String, gameType: String, participants: [UUID], context: ModelContext) {
         let expense = GameExpense(
             payerId: payerId,
             totalAmount: totalAmount,
-            description: description,
+            expenseDescription: description,
             gameType: gameType,
             participants: participants
         )
-        gameExpenses.append(expense)
-        saveGameExpenses()
-        
-        // odrazu długi dla wszystkich uczestników
+        context.insert(expense)
+
+        // długi dla wszystkich uczestników
         for participantId in participants where participantId != payerId {
             addDebt(
                 creditorId: payerId,
                 debtorId: participantId,
                 amount: expense.splitAmount,
                 description: "Udział w \(description)",
-                gameSessionId: expense.id
+                gameSessionId: expense.id,
+                context: context
             )
         }
+
+        try? context.save()
     }
-    
-    func settleDebt(debtId: UUID) {
-        if let index = debts.firstIndex(where: { $0.id == debtId }) {
-            debts[index] = Debt(
-                id: debts[index].id,
-                creditorId: debts[index].creditorId,
-                debtorId: debts[index].debtorId,
-                amount: debts[index].amount,
-                description: debts[index].description,
-                date: debts[index].date,
-                isSettled: true,
-                gameSessionId: debts[index].gameSessionId
-            )
-            saveDebts()
-        }
+
+    func settleDebt(debt: Debt, context: ModelContext) {
+        debt.isSettled = true
+        try? context.save()
     }
-    
-    func addSettlement(fromPlayerId: UUID, toPlayerId: UUID, amount: Double, description: String) {
+
+    func addSettlement(fromPlayerId: UUID, toPlayerId: UUID, amount: Double, description: String, context: ModelContext) {
         let settlement = Settlement(
             fromPlayerId: fromPlayerId,
             toPlayerId: toPlayerId,
             amount: amount,
-            description: description
+            settlementDescription: description
         )
-        settlements.append(settlement)
-        saveSettlements()
+        context.insert(settlement)
+        try? context.save()
     }
-    
+
     // MARK: - Calculations
-    
-    func calculateNetBalance(for playerId: UUID, players: [Player]) -> Double {
-        var balance = 0.0
-        
-        // ile inni sa winni graczowi
-        let owedToMe = debts.filter {
-            $0.creditorId == playerId && !$0.isSettled
-        }
-        balance += owedToMe.reduce(0) { $0 + $1.amount }
-        
-        // ile gracz jest winnny innym
-        let myDebts = debts.filter {
-            $0.debtorId == playerId && !$0.isSettled
-        }
-        balance -= myDebts.reduce(0) { $0 + $1.amount }
-        
-        return balance
+
+    func calculateNetBalance(for playerId: UUID, debts: [Debt]) -> Double {
+        let owedToMe = debts.filter { $0.creditorId == playerId && !$0.isSettled }
+        let myDebts = debts.filter { $0.debtorId == playerId && !$0.isSettled }
+        return owedToMe.reduce(0) { $0 + $1.amount } - myDebts.reduce(0) { $0 + $1.amount }
     }
-    
-    func getDebtsForPlayer(playerId: UUID, players: [Player]) -> (owedToPlayer: [Debt], playerOwes: [Debt]) {
-        let owedToPlayer = debts.filter {
-            $0.creditorId == playerId && !$0.isSettled
-        }
-        let playerOwes = debts.filter {
-            $0.debtorId == playerId && !$0.isSettled
-        }
-        
+
+    func getDebtsForPlayer(playerId: UUID, debts: [Debt]) -> (owedToPlayer: [Debt], playerOwes: [Debt]) {
+        let owedToPlayer = debts.filter { $0.creditorId == playerId && !$0.isSettled }
+        let playerOwes = debts.filter { $0.debtorId == playerId && !$0.isSettled }
         return (owedToPlayer, playerOwes)
     }
-    
-    // MARK: - Persistence
-    
-    private func saveDebts() {
-        do {
-            let encoder = JSONEncoder()
-            let encodedData = try encoder.encode(debts)
-            UserDefaults.standard.set(encodedData, forKey: debtsKey)
-        } catch {
-            print("Błąd zapisywania długów: \(error)")
-        }
-    }
-    
-    private func loadDebts() {
-        guard let savedData = UserDefaults.standard.data(forKey: debtsKey) else { return }
-        do {
-            let decoder = JSONDecoder()
-            debts = try decoder.decode([Debt].self, from: savedData)
-        } catch {
-            print("Błąd ładowania długów: \(error)")
-        }
-    }
-    
-    private func saveGameExpenses() {
-        do {
-            let encoder = JSONEncoder()
-            let encodedData = try encoder.encode(gameExpenses)
-            UserDefaults.standard.set(encodedData, forKey: expensesKey)
-        } catch {
-            print("Błąd zapisywania wydatków: \(error)")
-        }
-    }
-    
-    private func loadGameExpenses() {
-        guard let savedData = UserDefaults.standard.data(forKey: expensesKey) else { return }
-        do {
-            let decoder = JSONDecoder()
-            gameExpenses = try decoder.decode([GameExpense].self, from: savedData)
-        } catch {
-            print("Błąd ładowania wydatków: \(error)")
-        }
-    }
-    
-    private func saveSettlements() {
-        do {
-            let encoder = JSONEncoder()
-            let encodedData = try encoder.encode(settlements)
-            UserDefaults.standard.set(encodedData, forKey: settlementsKey)
-        } catch {
-            print("Błąd zapisywania rozliczeń: \(error)")
-        }
-    }
-    
-    private func loadSettlements() {
-        guard let savedData = UserDefaults.standard.data(forKey: settlementsKey) else { return }
-        do {
-            let decoder = JSONDecoder()
-            settlements = try decoder.decode([Settlement].self, from: savedData)
-        } catch {
-            print("Błąd ładowania rozliczeń: \(error)")
-        }
+
+    // MARK: - Totals
+
+    func calculateTotals(debts: [Debt], gameExpenses: [GameExpense], settlements: [Settlement]) -> (totalDebt: Double, totalExpenses: Double, totalSettled: Double) {
+        let totalDebt = debts.filter { !$0.isSettled }.reduce(0) { $0 + $1.amount }
+        let totalExpenses = gameExpenses.reduce(0) { $0 + $1.totalAmount }
+        let totalSettled = settlements.reduce(0) { $0 + $1.amount }
+        return (totalDebt, totalExpenses, totalSettled)
     }
 }
+

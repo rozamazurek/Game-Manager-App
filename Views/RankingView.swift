@@ -1,19 +1,21 @@
 import SwiftUI
+import SwiftData
 
 struct RankingView: View {
     @StateObject private var gameViewModel = GameViewModel()
     @State private var currentViewIndex = 0
     @State private var rotationAngle: Double = 0
     @GestureState private var dragOffset = CGSize.zero
+    @Query private var players: [Player]
     
     let views = ["Podium", "Lista", "Statystyki"]
     
-    var sortedPlayers: [Player] {
-        gameViewModel.players.sorted { $0.totalPoints > $1.totalPoints }
+    var sortedPlayersByPoints: [Player] {
+        players.sorted { $0.totalPoints > $1.totalPoints }
     }
     
     var topThreePlayers: [Player] {
-        Array(sortedPlayers.prefix(3))
+        Array(sortedPlayersByPoints.prefix(3))
     }
     
     var body: some View {
@@ -25,32 +27,23 @@ struct RankingView: View {
                         .background(Color(.systemBackground))
                     
                     ZStack {
-                        // Podium View
                         if currentViewIndex == 0 {
-                            PodiumViewContent(topPlayers: topThreePlayers, sortedPlayers: sortedPlayers)
-                                .rotation3DEffect(
-                                    .degrees(rotationAngle),
-                                    axis: (x: 0, y: 1, 0)
-                                    )
+                            PodiumViewContent(
+                                topPlayers: topThreePlayers,
+                                sortedPlayers: sortedPlayersByPoints
+                            )
+                            .rotation3DEffect(.degrees(rotationAngle), axis: (x: 0, y: 1, z: 0))
                         }
                         
-                        // List View
                         if currentViewIndex == 1 {
-                            ListViewContent(sortedPlayers: sortedPlayers)
-                                .rotation3DEffect(
-                                    .degrees(rotationAngle + 360),
-                                    axis: (x: 0, y: 1, 0)
-                                )
+                            ListViewContent(sortedPlayers: sortedPlayersByPoints)
+                                .rotation3DEffect(.degrees(rotationAngle + 360), axis: (x: 0, y: 1, z: 0))
                                 .offset(x: dragOffset.width)
                         }
                         
-                        // Stats View
                         if currentViewIndex == 2 {
-                            StatsViewContent(players: gameViewModel.players)
-                                .rotation3DEffect(
-                                    .degrees(rotationAngle + 720),
-                                    axis: (x: 0, y: 1, 0)
-                                )
+                            StatsViewContent(players: players)
+                                .rotation3DEffect(.degrees(rotationAngle + 720), axis: (x: 0, y: 1, z: 0))
                                 .offset(x: dragOffset.width)
                         }
                     }
@@ -63,13 +56,8 @@ struct RankingView: View {
                             .onEnded { value in
                                 let threshold: CGFloat = 100
                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                    if value.translation.width < -threshold {
-                                        // w lewo kolejny widok
-                                        goToNextView()
-                                    } else if value.translation.width > threshold {
-                                        // w prawo poprzedni widok
-                                        goToPreviousView()
-                                    }
+                                    if value.translation.width < -threshold { goToNextView() }
+                                    else if value.translation.width > threshold { goToPreviousView() }
                                     rotationAngle += value.translation.width < 0 ? 360 : -360
                                 }
                             }
@@ -91,11 +79,7 @@ struct RankingView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        withAnimation {
-                            gameViewModel.objectWillChange.send()
-                        }
-                    }) {
+                    Button(action: { withAnimation { gameViewModel.objectWillChange.send() } }) {
                         Image(systemName: "arrow.clockwise")
                     }
                 }
@@ -115,6 +99,9 @@ struct RankingView: View {
         }
     }
 }
+
+
+// MARK: - Header
 struct HeaderView: View {
     let currentViewIndex: Int
     
@@ -125,7 +112,6 @@ struct HeaderView: View {
                 .fontWeight(.bold)
                 .foregroundColor(.blue)
             
-            // Current view indicator
             Text([" Podium", " Pełna lista", " Statystyki"][currentViewIndex])
                 .font(.headline)
                 .foregroundColor(.blue)
@@ -136,11 +122,12 @@ struct HeaderView: View {
                         .fill(Color.blue.opacity(0.1))
                 )
         }
+        .frame(maxWidth: .infinity)
         .padding(.bottom, 20)
     }
 }
 
-
+// MARK: - Podium
 struct PodiumViewContent: View {
     let topPlayers: [Player]
     let sortedPlayers: [Player]
@@ -149,42 +136,18 @@ struct PodiumViewContent: View {
         ScrollView {
             VStack(spacing: 20) {
                 if !topPlayers.isEmpty {
-                    // Podium
                     HStack(alignment: .bottom, spacing: 20) {
-                        // 2nd place
                         if topPlayers.count > 1 {
-                            PodiumStand(
-                                player: topPlayers[1],
-                                position: 2,
-                                height: 120,
-                                color: .gray
-                            )
+                            PodiumStand(player: topPlayers[1], position: 2, height: 150, color: .gray)
                         }
-                        
-                        // 1st place
-                        if !topPlayers.isEmpty {
-                            PodiumStand(
-                                player: topPlayers[0],
-                                position: 1,
-                                height: 150,
-                                color: .yellow
-                            )
-                        }
-                        
-                        // 3rd place
+                        PodiumStand(player: topPlayers[0], position: 1, height: 180, color: .yellow)
                         if topPlayers.count > 2 {
-                            PodiumStand(
-                                player: topPlayers[2],
-                                position: 3,
-                                height: 90,
-                                color: .brown
-                            )
+                            PodiumStand(player: topPlayers[2], position: 3, height: 120, color: .brown)
                         }
                     }
                     .frame(height: 180)
                     .padding(.horizontal)
                     
-                    // TOP 10
                     VStack(alignment: .leading, spacing: 10) {
                         Text("TOP 10")
                             .font(.headline)
@@ -192,10 +155,7 @@ struct PodiumViewContent: View {
                             .padding(.horizontal)
                         
                         ForEach(Array(sortedPlayers.prefix(10).enumerated()), id: \.element.id) { index, player in
-                            SimplePlayerRow(
-                                player: player,
-                                position: index + 1
-                            )
+                            DetailedPlayerRow(player: player, position: index + 1)
                         }
                         .background(Color.white)
                         .cornerRadius(10)
@@ -232,29 +192,23 @@ struct PodiumStand: View {
     
     var body: some View {
         VStack(spacing: 8) {
-            // Position
             Text("\(position)")
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
                 .frame(width: 40, height: 40)
-                .background(
-                    Circle()
-                        .fill(color)
-                )
+                .background(Circle().fill(color))
             
-            // Avatar
             Image(systemName: player.avatarName)
                 .font(.title)
                 .foregroundColor(.blue)
             
-            // Name
             Text(player.nick)
                 .font(.caption)
                 .fontWeight(.medium)
+                .foregroundColor(.black)
                 .lineLimit(1)
             
-            // Points
             Text("\(player.totalPoints)")
                 .font(.caption)
                 .foregroundColor(.gray)
@@ -267,42 +221,7 @@ struct PodiumStand: View {
     }
 }
 
-struct SimplePlayerRow: View {
-    let player: Player
-    let position: Int
-    
-    var body: some View {
-        HStack {
-            Text("\(position).")
-                .font(.headline)
-                .foregroundColor(.gray)
-                .frame(width: 30)
-            
-            Image(systemName: player.avatarName)
-                .foregroundColor(.blue)
-                .frame(width: 30)
-            
-            Text(player.nick)
-                .font(.body)
-            
-            Spacer()
-            
-            Text("\(player.totalPoints) pkt")
-                .font(.caption)
-                .foregroundColor(.blue)
-        }
-        .padding(.horizontal, 15)
-        .padding(.vertical, 10)
-        .background(Color.white)
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(Color.gray.opacity(0.1)),
-            alignment: .bottom
-        )
-    }
-}
-
+// MARK: - List View
 struct ListViewContent: View {
     let sortedPlayers: [Player]
     
@@ -310,11 +229,8 @@ struct ListViewContent: View {
         ScrollView {
             VStack(spacing: 0) {
                 ForEach(Array(sortedPlayers.enumerated()), id: \.element.id) { index, player in
-                    DetailedPlayerRow(
-                        player: player,
-                        position: index + 1
-                    )
-                    .padding(.horizontal)
+                    DetailedPlayerRow(player: player, position: index + 1)
+                        .padding(.horizontal)
                 }
             }
             .padding(.vertical, 20)
@@ -328,23 +244,19 @@ struct DetailedPlayerRow: View {
     
     var body: some View {
         HStack(spacing: 15) {
-            // Position
             Text("\(position).")
                 .font(.title3)
                 .fontWeight(.bold)
                 .foregroundColor(position <= 3 ? .yellow : .blue)
                 .frame(width: 40)
             
-            // Avatar
             Image(systemName: player.avatarName)
                 .font(.title2)
                 .foregroundColor(.blue)
                 .frame(width: 40)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text(player.nick)
-                    .font(.headline)
-                
+                Text(player.nick).font(.headline).foregroundColor(.black)
                 Text("\(player.gamesPlayed) gier")
                     .font(.caption)
                     .foregroundColor(.gray)
@@ -352,16 +264,9 @@ struct DetailedPlayerRow: View {
             
             Spacer()
             
-            // Points
             VStack(alignment: .trailing) {
-                Text("\(player.totalPoints)")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.blue)
-                
-                Text("punktów")
-                    .font(.caption)
-                    .foregroundColor(.gray)
+                Text("\(player.totalPoints)").font(.title2).fontWeight(.bold).foregroundColor(.blue)
+                Text("punktów").font(.caption).foregroundColor(.gray)
             }
         }
         .padding(.vertical, 15)
@@ -373,6 +278,7 @@ struct DetailedPlayerRow: View {
     }
 }
 
+// MARK: - Stats
 struct StatsViewContent: View {
     let players: [Player]
     
@@ -384,34 +290,10 @@ struct StatsViewContent: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Stats Cards
-                StatCard(
-                    title: "Graczy",
-                    value: "\(totalPlayers)",
-                    icon: "person.3.fill",
-                    color: .blue
-                )
-                
-                StatCard(
-                    title: "Punkty",
-                    value: "\(totalPoints)",
-                    icon: "star.fill",
-                    color: .yellow
-                )
-                
-                StatCard(
-                    title: "Rozegranych gier",
-                    value: "\(totalGames)",
-                    icon: "gamecontroller.fill",
-                    color: .green
-                )
-                
-                StatCard(
-                    title: "Średnia na gracza",
-                    value: String(format: "%.1f", avgPoints),
-                    icon: "chart.bar.fill",
-                    color: .purple
-                )
+                StatCard(title: "Graczy", value: "\(totalPlayers)", icon: "person.3.fill", color: .blue)
+                StatCard(title: "Punkty", value: "\(totalPoints)", icon: "star.fill", color: .yellow)
+                StatCard(title: "Rozegranych gier", value: "\(totalGames)", icon: "gamecontroller.fill", color: .green)
+                StatCard(title: "Średnia na gracza", value: String(format: "%.1f", avgPoints), icon: "chart.bar.fill", color: .purple)
             }
             .padding(.horizontal)
             .padding(.vertical, 20)
@@ -427,20 +309,11 @@ struct StatCard: View {
     
     var body: some View {
         HStack {
-            Image(systemName: icon)
-                .font(.largeTitle)
-                .foregroundColor(color)
-                .frame(width: 60)
+            Image(systemName: icon).font(.largeTitle).foregroundColor(color).frame(width: 60)
             
             VStack(alignment: .leading, spacing: 5) {
-                Text(title)
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                
-                Text(value)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(color)
+                Text(title).font(.caption).foregroundColor(.gray)
+                Text(value).font(.title).fontWeight(.bold).foregroundColor(color)
             }
             
             Spacer()
@@ -452,19 +325,3 @@ struct StatCard: View {
     }
 }
 
-struct RankingView_Previews: PreviewProvider {
-    static var previews: some View {
-        let mockPlayers = [
-            Player(nick: "Janek", totalPoints: 450, gamesPlayed: 12, avatarName: "crown.fill"),
-            Player(nick: "Asia", totalPoints: 380, gamesPlayed: 10, avatarName: "star.fill"),
-            Player(nick: "Marek", totalPoints: 320, gamesPlayed: 8, avatarName: "bolt.fill"),
-        ]
-        
-        let mockViewModel = GameViewModel()
-        
-        return RankingView()
-            .onAppear {
-                mockViewModel.players = mockPlayers
-            }
-    }
-}

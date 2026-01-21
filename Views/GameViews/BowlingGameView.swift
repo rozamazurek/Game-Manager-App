@@ -1,14 +1,18 @@
 import SwiftUI
+import SwiftData
 
 struct BowlingGameView: View {
-    init(viewModel: GameViewModel) {
-        self.viewModel = viewModel
-        self._bowlingViewModel = StateObject(wrappedValue: BowlingViewModel(gameViewModel: viewModel))
-    }
     @ObservedObject var viewModel: GameViewModel
     @StateObject private var bowlingViewModel: BowlingViewModel
     @State private var showingCreditsAddPlayer = false
-    
+
+    init(viewModel: GameViewModel) {
+        self.viewModel = viewModel
+        self._bowlingViewModel = StateObject(
+            wrappedValue: BowlingViewModel(gameViewModel: viewModel)
+        )
+    }
+
     var body: some View {
         HStack(spacing: 15) {
             Button("Dodaj punkty za grę w kręgle") {
@@ -26,16 +30,19 @@ struct BowlingGameView: View {
         }
     }
 }
+
 struct BowlingGamingView: View {
+    @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var viewModel: GameViewModel
     @StateObject private var bowlingViewModel: BowlingViewModel
-    
+    @Query(sort: \Player.nick) private var players: [Player]
+
     init(viewModel: GameViewModel) {
-        self.viewModel = viewModel
-        self._bowlingViewModel = StateObject(wrappedValue: BowlingViewModel(gameViewModel: viewModel))
+        self._bowlingViewModel = StateObject(
+            wrappedValue: BowlingViewModel(gameViewModel: viewModel)
+        )
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -51,28 +58,29 @@ struct BowlingGamingView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Zapisz") {
                         saveGameResults()
                     }
-                    .disabled(bowlingViewModel.selectedPlayers.isEmpty ||
-                             bowlingViewModel.numOfPoints.isEmpty ||
-                             bowlingViewModel.finalPosition.isEmpty ||
-                              bowlingViewModel.numOfGames.isEmpty ||
-                              bowlingViewModel.totalPlayers.isEmpty)
+                    .disabled(
+                        bowlingViewModel.selectedPlayers.isEmpty ||
+                        bowlingViewModel.numOfPoints.isEmpty ||
+                        bowlingViewModel.numOfGames.isEmpty ||
+                        bowlingViewModel.finalPosition.isEmpty ||
+                        bowlingViewModel.totalPlayers.isEmpty
+                    )
                 }
             }
         }
     }
-    
-    
+
     private var playerSelectionSection: some View {
         Section(header: Text("Wybór graczy")) {
-            ForEach(viewModel.players) { player in
+            ForEach(players) { player in
                 PlayerSelectionRow(
                     player: player,
-                    isSelected: bowlingViewModel.selectedPlayers.contains(where: { $0.id == player.id })
+                    isSelected: bowlingViewModel.selectedPlayers.contains { $0.id == player.id }
                 ) {
                     if bowlingViewModel.selectedPlayers.contains(where: { $0.id == player.id }) {
                         bowlingViewModel.selectedPlayers.removeAll { $0.id == player.id }
@@ -83,23 +91,23 @@ struct BowlingGamingView: View {
             }
         }
     }
-    
+
     private var gameResultsSection: some View {
         Section(header: Text("Wyniki gry")) {
             TextField("Liczba końcowych punktów", text: $bowlingViewModel.numOfPoints)
                 .keyboardType(.numberPad)
-            
+
             TextField("Liczba rozegranych rund", text: $bowlingViewModel.numOfGames)
                 .keyboardType(.numberPad)
-            
+
             TextField("Końcowa pozycja", text: $bowlingViewModel.finalPosition)
                 .keyboardType(.numberPad)
-            
+
             TextField("Liczba graczy", text: $bowlingViewModel.totalPlayers)
                 .keyboardType(.numberPad)
         }
     }
-    
+
     private var summarySection: some View {
         Group {
             if !bowlingViewModel.selectedPlayers.isEmpty {
@@ -111,6 +119,7 @@ struct BowlingGamingView: View {
                             finalPosition: Int(bowlingViewModel.finalPosition) ?? 1,
                             totalPlayers: Int(bowlingViewModel.totalPlayers) ?? 1
                         )
+
                         HStack {
                             Text(player.nick)
                             Spacer()
@@ -122,15 +131,11 @@ struct BowlingGamingView: View {
             }
         }
     }
-    
-    
+
     private func saveGameResults() {
-        
-        // Dodaj punkty każdemu wybranemu graczowi
         for player in bowlingViewModel.selectedPlayers {
-            bowlingViewModel.addBowlingPoints(player: player)
+            bowlingViewModel.addBowlingPoints(player: player, context: context)
         }
-    
         bowlingViewModel.resetForm()
         dismiss()
     }

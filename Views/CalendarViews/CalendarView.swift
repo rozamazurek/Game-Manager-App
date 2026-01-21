@@ -1,15 +1,16 @@
 import SwiftUI
+import SwiftData
 
 struct CalendarView: View {
     @StateObject private var viewModel = CalendarViewModel()
-    
+    @Query(sort: \PlayDate.date) private var playDates: [PlayDate]
     var body: some View {
         ZStack{
             Color.black.ignoresSafeArea()
             VStack{
-                CalendarItem(groupedDates: viewModel.groupedDates)
+                CalendarItem(groupedDates: viewModel.groupedDates(from: playDates))
                 ManageCalendar(viewModel: viewModel)
-                Countdown(playDates: viewModel.playDates) // PRZEKAZUJEMY całą tablicę
+                Countdown(playDates: playDates) // PRZEKAZUJEMY całą tablicę
             }
         }
         .sheet(isPresented: $viewModel.showingEditSheet) {

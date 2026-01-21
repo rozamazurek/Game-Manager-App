@@ -1,6 +1,8 @@
 import SwiftUI
 
+// MARK: - Main Tab View
 struct MainTabView: View {
+
     var body: some View {
         TabView {
             RankingView()
@@ -23,36 +25,8 @@ struct MainTabView: View {
                     Label("Kalendarz", systemImage: "deskclock.fill")
                 }
             
-            AccountView()
-                .tabItem {
-                    Label("Konto", systemImage: "person.fill")
-                }
         }
         .accentColor(.red)
     }
 }
 
-
-struct Platform_View: View{
-    var body: some View{
-        HStack{
-            Text("1").foregroundStyle(Color.white)
-            Text("2").foregroundStyle(Color.white)
-            Text("3").foregroundStyle(Color.white)
-        }.background(Color.blue).frame(width: 800,height: 800)
-    }
-}
-
-
-
-struct AccountView: View {
-    var body: some View {
-        HStack{
-            Text("Ekran użytkownika")
-        }
-    }
-}
-
-#Preview {
-    MainTabView()
-}

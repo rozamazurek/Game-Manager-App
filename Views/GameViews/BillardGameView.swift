@@ -1,14 +1,18 @@
 import SwiftUI
+import SwiftData
 
 struct BillardGameView: View {
-    init(viewModel: GameViewModel) {
-        self.viewModel = viewModel
-        self._billardViewModel = StateObject(wrappedValue: BillardViewModel(gameViewModel: viewModel))
-    }
     @ObservedObject var viewModel: GameViewModel
     @StateObject private var billardViewModel: BillardViewModel
     @State private var showingCreditsAddPlayer = false
-    
+
+    init(viewModel: GameViewModel) {
+        self.viewModel = viewModel
+        self._billardViewModel = StateObject(
+            wrappedValue: BillardViewModel(gameViewModel: viewModel)
+        )
+    }
+
     var body: some View {
         HStack(spacing: 15) {
             Button("Dodaj punkty za grę billarda") {
@@ -26,16 +30,19 @@ struct BillardGameView: View {
         }
     }
 }
+
 struct BillardGamingView: View {
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var viewModel: GameViewModel
+    @Environment(\.modelContext) private var context
     @StateObject private var billardViewModel: BillardViewModel
-    
+    @Query(sort: \Player.nick) private var players: [Player]
+
     init(viewModel: GameViewModel) {
-        self.viewModel = viewModel
-        self._billardViewModel = StateObject(wrappedValue: BillardViewModel(gameViewModel: viewModel))
+        self._billardViewModel = StateObject(
+            wrappedValue: BillardViewModel(gameViewModel: viewModel)
+        )
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -51,26 +58,27 @@ struct BillardGamingView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Zapisz") {
                         saveGameResults()
                     }
-                    .disabled(billardViewModel.selectedPlayers.isEmpty ||
-                             billardViewModel.gamesWinned.isEmpty ||
-                             billardViewModel.allGames.isEmpty)
+                    .disabled(
+                        billardViewModel.selectedPlayers.isEmpty ||
+                        billardViewModel.gamesWinned.isEmpty ||
+                        billardViewModel.allGames.isEmpty
+                    )
                 }
             }
         }
     }
-    
-    
+
     private var playerSelectionSection: some View {
         Section(header: Text("Wybór graczy")) {
-            ForEach(viewModel.players) { player in
+            ForEach(players) { player in
                 PlayerSelectionRow(
                     player: player,
-                    isSelected: billardViewModel.selectedPlayers.contains(where: { $0.id == player.id })
+                    isSelected: billardViewModel.selectedPlayers.contains { $0.id == player.id }
                 ) {
                     if billardViewModel.selectedPlayers.contains(where: { $0.id == player.id }) {
                         billardViewModel.selectedPlayers.removeAll { $0.id == player.id }
@@ -81,18 +89,17 @@ struct BillardGamingView: View {
             }
         }
     }
-    
+
     private var gameResultsSection: some View {
         Section(header: Text("Wyniki gry")) {
             TextField("Liczba wygranych gier", text: $billardViewModel.gamesWinned)
                 .keyboardType(.numberPad)
-            
+
             TextField("Liczba wszystkich gier", text: $billardViewModel.allGames)
                 .keyboardType(.numberPad)
-            
         }
     }
-    
+
     private var summarySection: some View {
         Group {
             if !billardViewModel.selectedPlayers.isEmpty {
@@ -102,6 +109,7 @@ struct BillardGamingView: View {
                             gamesWinned: Int(billardViewModel.gamesWinned) ?? 0,
                             allGames: Int(billardViewModel.allGames) ?? 0
                         )
+
                         HStack {
                             Text(player.nick)
                             Spacer()
@@ -113,18 +121,13 @@ struct BillardGamingView: View {
             }
         }
     }
-    
-    
+
     private func saveGameResults() {
-        
-        // Dodaj punkty każdemu wybranemu graczowi
         for player in billardViewModel.selectedPlayers {
-            billardViewModel.addBillardPoints(player: player)
+            billardViewModel.addBillardPoints(player: player, context: context)
         }
-    
         billardViewModel.resetForm()
         dismiss()
     }
 }
-
 

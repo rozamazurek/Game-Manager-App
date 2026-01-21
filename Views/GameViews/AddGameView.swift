@@ -1,7 +1,9 @@
 import SwiftUI
+import SwiftData
 
 struct AddGameView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     @ObservedObject var viewModel: CalendarViewModel // ODBIERAMY viewModel
     @State private var gameDate = Date()
     @State private var gameName = ""
@@ -43,7 +45,7 @@ struct AddGameView: View {
     
     private func addGame() {
         guard !gameName.isEmpty, !gameVenue.isEmpty else { return }
-        viewModel.addGame(name: gameName, venue: gameVenue, date: gameDate)
+        viewModel.addGame(name: gameName, venue: gameVenue, date: gameDate,context: context)
         dismiss()
     }
 }

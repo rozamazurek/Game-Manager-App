@@ -1,20 +1,23 @@
 import Foundation
+import SwiftData
+import SwiftUI
 
-struct Debt: Identifiable, Codable {
-    let id: UUID
-    let creditorId: UUID  // kto pożyczył
-    let debtorId: UUID    // kto jest winien
-    let amount: Double
-    let description: String
-    let date: Date
-    let isSettled: Bool
-    let gameSessionId: UUID?  
+@Model
+class Debt: Identifiable {
+    @Attribute(.unique) var id: UUID
+    var creditorId: UUID
+    var debtorId: UUID
+    var amount: Double
+    var debtDescription: String
+    var date: Date
+    var isSettled: Bool
+    var gameSessionId: UUID?
     
     init(id: UUID = UUID(),
          creditorId: UUID,
          debtorId: UUID,
          amount: Double,
-         description: String,
+         debtDescription: String,
          date: Date = Date(),
          isSettled: Bool = false,
          gameSessionId: UUID? = nil) {
@@ -22,7 +25,7 @@ struct Debt: Identifiable, Codable {
         self.creditorId = creditorId
         self.debtorId = debtorId
         self.amount = amount
-        self.description = description
+        self.debtDescription = debtDescription
         self.date = date
         self.isSettled = isSettled
         self.gameSessionId = gameSessionId

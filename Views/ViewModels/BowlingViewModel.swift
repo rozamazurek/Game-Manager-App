@@ -1,42 +1,47 @@
 import Foundation
 import SwiftUI
+import SwiftData
 
 class BowlingViewModel: ObservableObject {
     @ObservedObject var gameViewModel: GameViewModel
+
     @Published var selectedPlayers: [Player] = []
-    @Published var numOfPoints: String = ""
-    @Published var numOfGames: String = ""
-    @Published var finalPosition: String = ""
-    @Published var totalPlayers: String = ""
-    
+    @Published var numOfPoints = ""
+    @Published var numOfGames = ""
+    @Published var finalPosition = ""
+    @Published var totalPlayers = ""
+
     init(gameViewModel: GameViewModel) {
         self.gameViewModel = gameViewModel
     }
-    
-    func addBowlingPoints(player: Player) {
+
+    // Dodawanie punktów do pojedynczego gracza
+    func addBowlingPoints(player: Player, context: ModelContext) {
         let pointsToAdd = calculatePointsBowling(
             numOfPoints: Int(numOfPoints) ?? 0,
             numOfGames: Int(numOfGames) ?? 0,
             finalPosition: Int(finalPosition) ?? 1,
             totalPlayers: Int(totalPlayers) ?? 1
         )
-        addPointsToPlayer(pointsToAdd: pointsToAdd, player: player)
+
+        // teraz gracz przekazywany jest bezpośrednio z widoku
+        player.totalPoints += pointsToAdd
+        player.gamesPlayed += 1
+        // zapis w SwiftData
+        try? context.save()
     }
-    
-    private func addPointsToPlayer(pointsToAdd: Int, player: Player) {
-        if let index = gameViewModel.players.firstIndex(where: { $0.id == player.id }) {
-            gameViewModel.players[index].totalPoints += pointsToAdd
-            gameViewModel.players[index].gamesPlayed += 1
-        }
-    }
-    
-    public func calculatePointsBowling(numOfPoints: Int, numOfGames: Int, finalPosition: Int, totalPlayers: Int) -> Int {
+
+    func calculatePointsBowling(
+        numOfPoints: Int,
+        numOfGames: Int,
+        finalPosition: Int,
+        totalPlayers: Int
+    ) -> Int {
         let basePoints = (totalPlayers - finalPosition + 1) * 10
-        let gamePoints = numOfPoints/(numOfGames+1)*10
-        let netPoints = gamePoints + basePoints
-        return max(netPoints, 0)
+        let gamePoints = numOfGames > 0 ? (numOfPoints / (numOfGames + 1)) * 10 : 0
+        return max(gamePoints + basePoints, 0)
     }
-    
+
     func resetForm() {
         numOfPoints = ""
         numOfGames = ""

@@ -5,37 +5,41 @@ struct CalendarItem: View {
     
     var body: some View {
         ScrollView(showsIndicators: false) {
-            LazyVStack {
+            VStack(spacing: 15) {
                 Text("KALENDARZ ROZGRYWEK")
                     .foregroundColor(.white)
+                    .font(.headline)
                 
                 Rectangle()
-                    .foregroundColor(.red)
-                    .opacity(0.80)
+                    .foregroundColor(.blue)
+                    .opacity(0.8)
                     .frame(width: 300, height: 410)
                     .cornerRadius(20)
                     .overlay(
-                        List(groupedDates) { monthSection in
-                            Section(header: Text(monthSection.title)
-                                .foregroundColor(.white)
-                                .font(.headline)) {
+                        List {
+                            ForEach(groupedDates) { monthSection in
+                                Section(header: Text(monthSection.title)
+                                    .foregroundColor(.white)
+                                    .font(.headline)) {
                                     ForEach(monthSection.dates) { playDate in
-                                        VStack(alignment: .leading) {
+                                        VStack(alignment: .leading, spacing: 2) {
                                             Text(playDate.gameName)
-                                                .foregroundColor(.black)
+                                                .foregroundColor(.white)
                                             Text(playDate.venue)
                                                 .foregroundColor(.gray)
                                             Text(playDate.date, style: .date)
-                                                .foregroundColor(.red)
+                                                .foregroundColor(.blue)
                                         }
+                                        .padding(.vertical, 2)
                                     }
-                                }
+                                    }
+                            }
                         }
-                        .listStyle(PlainListStyle())
+                        .listStyle(.plain)
                         .background(Color.clear)
-                        .padding()
                     )
             }
+            .padding()
         }
     }
 }

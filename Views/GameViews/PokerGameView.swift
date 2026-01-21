@@ -1,14 +1,18 @@
 import SwiftUI
+import SwiftData
 
 struct PokerGameView: View {
-    init(viewModel: GameViewModel) {
-        self.viewModel = viewModel
-        self._pokerViewModel = StateObject(wrappedValue: PokerViewModel(gameViewModel: viewModel))
-    }
     @ObservedObject var viewModel: GameViewModel
     @StateObject private var pokerViewModel: PokerViewModel
     @State private var showingCreditsAddPlayer = false
-    
+
+    init(viewModel: GameViewModel) {
+        self.viewModel = viewModel
+        self._pokerViewModel = StateObject(
+            wrappedValue: PokerViewModel(gameViewModel: viewModel)
+        )
+    }
+
     var body: some View {
         HStack(spacing: 15) {
             Button("Dodaj punkty za pokera") {
@@ -26,16 +30,19 @@ struct PokerGameView: View {
         }
     }
 }
+
 struct PokerGamingView: View {
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var viewModel: GameViewModel
+    @Environment(\.modelContext) private var context
     @StateObject private var pokerViewModel: PokerViewModel
-    
+    @Query(sort: \Player.nick) private var players: [Player]
+
     init(viewModel: GameViewModel) {
-        self.viewModel = viewModel
-        self._pokerViewModel = StateObject(wrappedValue: PokerViewModel(gameViewModel: viewModel))
+        self._pokerViewModel = StateObject(
+            wrappedValue: PokerViewModel(gameViewModel: viewModel)
+        )
     }
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -51,27 +58,27 @@ struct PokerGamingView: View {
                         dismiss()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Zapisz") {
                         saveGameResults()
                     }
-                    .disabled(pokerViewModel.selectedPlayers.isEmpty ||
-                             pokerViewModel.numTokens.isEmpty ||
-                             pokerViewModel.finalPosition.isEmpty)
+                    .disabled(
+                        pokerViewModel.selectedPlayers.isEmpty ||
+                        pokerViewModel.numTokens.isEmpty ||
+                        pokerViewModel.finalPosition.isEmpty
+                    )
                 }
             }
         }
     }
-    
-    // MARK: - Sections as computed properties
-    
+
     private var playerSelectionSection: some View {
         Section(header: Text("Wybór graczy")) {
-            ForEach(viewModel.players) { player in
+            ForEach(players) { player in
                 PlayerSelectionRow(
                     player: player,
-                    isSelected: pokerViewModel.selectedPlayers.contains(where: { $0.id == player.id })
+                    isSelected: pokerViewModel.selectedPlayers.contains { $0.id == player.id }
                 ) {
                     if pokerViewModel.selectedPlayers.contains(where: { $0.id == player.id }) {
                         pokerViewModel.selectedPlayers.removeAll { $0.id == player.id }
@@ -82,23 +89,23 @@ struct PokerGamingView: View {
             }
         }
     }
-    
+
     private var gameResultsSection: some View {
         Section(header: Text("Wyniki gry")) {
             TextField("Liczba żetonów", text: $pokerViewModel.numTokens)
                 .keyboardType(.numberPad)
-            
+
             TextField("Włożone pieniądze", text: $pokerViewModel.moneyPut)
                 .keyboardType(.numberPad)
-            
+
             TextField("Końcowa pozycja", text: $pokerViewModel.finalPosition)
                 .keyboardType(.numberPad)
-            
+
             TextField("Liczba graczy", text: $pokerViewModel.totalPlayers)
                 .keyboardType(.numberPad)
         }
     }
-    
+
     private var summarySection: some View {
         Group {
             if !pokerViewModel.selectedPlayers.isEmpty {
@@ -110,6 +117,7 @@ struct PokerGamingView: View {
                             finalPosition: Int(pokerViewModel.finalPosition) ?? 1,
                             totalPlayers: Int(pokerViewModel.totalPlayers) ?? 1
                         )
+
                         HStack {
                             Text(player.nick)
                             Spacer()
@@ -121,21 +129,15 @@ struct PokerGamingView: View {
             }
         }
     }
-    
-    // MARK: - Methods
-    
+
     private func saveGameResults() {
-        
-        // Dodaj punkty każdemu wybranemu graczowi
         for player in pokerViewModel.selectedPlayers {
-            pokerViewModel.addPokerPoints(player: player)
+            pokerViewModel.addPokerPoints(player: player, context: context)
         }
-    
         pokerViewModel.resetForm()
         dismiss()
     }
 }
-
 struct PlayerSelectionRow: View {
     let player: Player
     let isSelected: Bool

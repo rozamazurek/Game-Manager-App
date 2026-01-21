@@ -1,13 +1,15 @@
 import SwiftUI
+import SwiftData
 
 struct EditGameView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: CalendarViewModel
+    @Query(sort: \PlayDate.date) private var playDates: [PlayDate]
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(viewModel.groupedDates) { monthSection in
+                ForEach(viewModel.groupedDates(from: playDates)) { monthSection in
                     Section(header: Text(monthSection.title)
                         .foregroundColor(.black)
                         .font(.headline)) {
@@ -59,6 +61,7 @@ struct EventRow: View {
 
 struct EditEventSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     @ObservedObject var viewModel: CalendarViewModel
     let event: PlayDate
     
@@ -91,7 +94,7 @@ struct EditEventSheet: View {
                 
                 Section {
                     Button("Usuń wydarzenie") {
-                        viewModel.deleteGame(id: event.id)
+                        viewModel.deleteGame(game: event,context: context)
                         dismiss()
                     }
                     .foregroundColor(.red)
@@ -109,10 +112,11 @@ struct EditEventSheet: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Zapisz") {
                         viewModel.editGame(
-                            id: event.id,
+                            game: event,
                             newName: gameName,
                             newVenue: gameVenue,
-                            newDate: gameDate
+                            newDate: gameDate,
+                            context: context
                         )
                         dismiss()
                     }

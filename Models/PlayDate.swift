@@ -1,8 +1,18 @@
 import Foundation
+import SwiftData
+import SwiftUI
 
-struct PlayDate: Identifiable {
-    let id = UUID()
-    let gameName: String
-    let venue: String
-    let date: Date
+@Model
+class PlayDate: Identifiable {
+    @Attribute(.unique) var id: UUID
+    var gameName: String
+    var venue: String
+    var date: Date
+    
+    init(id: UUID = UUID(), gameName: String, venue: String, date: Date) {
+        self.id = id
+        self.gameName = gameName
+        self.venue = venue
+        self.date = date
+    }
 }

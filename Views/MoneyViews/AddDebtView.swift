@@ -1,9 +1,12 @@
 import SwiftUI
+import SwiftData
 
 struct AddDebtView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     @ObservedObject var gameViewModel: GameViewModel
     @ObservedObject var moneyViewModel: MoneyViewModel
+    let players: [Player] // ✅ Przekazane z rodzica, zamiast @Query
     
     @State private var selectedCreditorId: UUID?
     @State private var selectedDebtorId: UUID?
@@ -11,11 +14,11 @@ struct AddDebtView: View {
     @State private var description = ""
     
     var selectedCreditor: Player? {
-        gameViewModel.players.first { $0.id == selectedCreditorId }
+        players.first { $0.id == selectedCreditorId }
     }
     
     var selectedDebtor: Player? {
-        gameViewModel.players.first { $0.id == selectedDebtorId }
+        players.first { $0.id == selectedDebtorId }
     }
     
     var isFormValid: Bool {
@@ -32,7 +35,7 @@ struct AddDebtView: View {
                 Section(header: Text("Kto pożyczył?")) {
                     Picker("Wybierz wierzyciela", selection: $selectedCreditorId) {
                         Text("Wybierz...").tag(nil as UUID?)
-                        ForEach(gameViewModel.players) { player in
+                        ForEach(players) { player in
                             PlayerPickerRow(player: player)
                                 .tag(player.id as UUID?)
                         }
@@ -43,7 +46,7 @@ struct AddDebtView: View {
                 Section(header: Text("Komu pożyczył?")) {
                     Picker("Wybierz dłużnika", selection: $selectedDebtorId) {
                         Text("Wybierz...").tag(nil as UUID?)
-                        ForEach(gameViewModel.players.filter { $0.id != selectedCreditorId }) { player in
+                        ForEach(players.filter { $0.id != selectedCreditorId }) { player in
                             PlayerPickerRow(player: player)
                                 .tag(player.id as UUID?)
                         }
@@ -109,7 +112,8 @@ struct AddDebtView: View {
                                 creditorId: creditorId,
                                 debtorId: debtorId,
                                 amount: amountValue,
-                                description: description.isEmpty ? "Dług" : description
+                                description: description.isEmpty ? "Dług" : description,
+                                context: context
                             )
                             dismiss()
                         }
@@ -139,3 +143,4 @@ struct PlayerPickerRow: View {
         }
     }
 }
+

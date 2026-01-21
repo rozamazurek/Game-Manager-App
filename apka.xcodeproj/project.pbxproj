@@ -24,6 +24,8 @@
 		749408B62EF446CA0096F4D5 /* AddGameExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749408B52EF446CA0096F4D5 /* AddGameExpenseView.swift */; };
 		749408B82EF446DF0096F4D5 /* MyFinancesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749408B72EF446DF0096F4D5 /* MyFinancesView.swift */; };
 		749408BA2EF446F80096F4D5 /* SettlementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749408B92EF446F80096F4D5 /* SettlementView.swift */; };
+		749408C92F10195F0096F4D5 /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 749408C82F10195F0096F4D5 /* Messages.framework */; };
+		749408E22F101AC10096F4D5 /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 749408C82F10195F0096F4D5 /* Messages.framework */; };
 		74DC4B7C2ED78E800098ADA8 /* PlayDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B7B2ED78E800098ADA8 /* PlayDate.swift */; };
 		74DC4B7E2ED78E8E0098ADA8 /* MonthSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B7D2ED78E8E0098ADA8 /* MonthSection.swift */; };
 		74DC4B802ED78EA20098ADA8 /* CalendarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B7F2ED78EA20098ADA8 /* CalendarViewModel.swift */; };
@@ -34,7 +36,6 @@
 		74DC4B8E2ED78F650098ADA8 /* AddGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B8D2ED78F650098ADA8 /* AddGameView.swift */; };
 		74DC4B902ED78F840098ADA8 /* EditGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B8F2ED78F840098ADA8 /* EditGameView.swift */; };
 		74DC4B922ED790350098ADA8 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B912ED790350098ADA8 /* MainTabView.swift */; };
-		74DC4B942ED7972E0098ADA8 /* GameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B932ED7972E0098ADA8 /* GameSession.swift */; };
 		74DC4B962ED797380098ADA8 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B952ED797380098ADA8 /* Player.swift */; };
 		74DC4BA02ED797B00098ADA8 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B9F2ED797B00098ADA8 /* GameViewModel.swift */; };
 		74DC4BA22ED797C00098ADA8 /* PokerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4BA12ED797C00098ADA8 /* PokerViewModel.swift */; };
@@ -86,6 +87,9 @@
 		749408B52EF446CA0096F4D5 /* AddGameExpenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGameExpenseView.swift; sourceTree = "<group>"; };
 		749408B72EF446DF0096F4D5 /* MyFinancesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFinancesView.swift; sourceTree = "<group>"; };
 		749408B92EF446F80096F4D5 /* SettlementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettlementView.swift; sourceTree = "<group>"; };
+		749408C62F10195F0096F4D5 /* IMessageExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = IMessageExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		749408C82F10195F0096F4D5 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = Library/Frameworks/Messages.framework; sourceTree = DEVELOPER_DIR; };
+		749408E12F101AC10096F4D5 /* DebtMessages.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DebtMessages.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		74DC4B7B2ED78E800098ADA8 /* PlayDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayDate.swift; sourceTree = "<group>"; };
 		74DC4B7D2ED78E8E0098ADA8 /* MonthSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthSection.swift; sourceTree = "<group>"; };
 		74DC4B7F2ED78EA20098ADA8 /* CalendarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewModel.swift; sourceTree = "<group>"; };
@@ -96,7 +100,6 @@
 		74DC4B8D2ED78F650098ADA8 /* AddGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGameView.swift; sourceTree = "<group>"; };
 		74DC4B8F2ED78F840098ADA8 /* EditGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditGameView.swift; sourceTree = "<group>"; };
 		74DC4B912ED790350098ADA8 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
-		74DC4B932ED7972E0098ADA8 /* GameSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSession.swift; sourceTree = "<group>"; };
 		74DC4B952ED797380098ADA8 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		74DC4B9F2ED797B00098ADA8 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		74DC4BA12ED797C00098ADA8 /* PokerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerViewModel.swift; sourceTree = "<group>"; };
@@ -131,6 +134,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		749408C32F10195F0096F4D5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				749408C92F10195F0096F4D5 /* Messages.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		749408DE2F101AC10096F4D5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				749408E22F101AC10096F4D5 /* Messages.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -143,6 +162,7 @@
 				74729E7E2EB3C98F00D41A34 /* apka */,
 				74729E902EB3C99000D41A34 /* apkaTests */,
 				74729E9A2EB3C99000D41A34 /* apkaUITests */,
+				749408C72F10195F0096F4D5 /* Frameworks */,
 				74729E7D2EB3C98F00D41A34 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -153,6 +173,8 @@
 				74729E7C2EB3C98F00D41A34 /* apka.app */,
 				74729E8D2EB3C99000D41A34 /* apkaTests.xctest */,
 				74729E972EB3C99000D41A34 /* apkaUITests.xctest */,
+				749408C62F10195F0096F4D5 /* IMessageExtension.appex */,
+				749408E12F101AC10096F4D5 /* DebtMessages.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -238,6 +260,14 @@
 			path = RankingViews;
 			sourceTree = "<group>";
 		};
+		749408C72F10195F0096F4D5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				749408C82F10195F0096F4D5 /* Messages.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		74DC4B762ED78DFD0098ADA8 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -270,7 +300,6 @@
 			children = (
 				74DC4B7B2ED78E800098ADA8 /* PlayDate.swift */,
 				74DC4B7D2ED78E8E0098ADA8 /* MonthSection.swift */,
-				74DC4B932ED7972E0098ADA8 /* GameSession.swift */,
 				74DC4B952ED797380098ADA8 /* Player.swift */,
 				749408A82EF446370096F4D5 /* Debt.swift */,
 				749408AA2EF4464C0096F4D5 /* GameExpense.swift */,
@@ -335,6 +364,40 @@
 			productReference = 74729E972EB3C99000D41A34 /* apkaUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		749408C52F10195F0096F4D5 /* IMessageExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 749408D92F1019610096F4D5 /* Build configuration list for PBXNativeTarget "IMessageExtension" */;
+			buildPhases = (
+				749408C22F10195F0096F4D5 /* Sources */,
+				749408C32F10195F0096F4D5 /* Frameworks */,
+				749408C42F10195F0096F4D5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = IMessageExtension;
+			productName = IMessageExtension;
+			productReference = 749408C62F10195F0096F4D5 /* IMessageExtension.appex */;
+			productType = "com.apple.product-type.app-extension.messages";
+		};
+		749408E02F101AC10096F4D5 /* DebtMessages */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 749408EF2F101AC20096F4D5 /* Build configuration list for PBXNativeTarget "DebtMessages" */;
+			buildPhases = (
+				749408DD2F101AC10096F4D5 /* Sources */,
+				749408DE2F101AC10096F4D5 /* Frameworks */,
+				749408DF2F101AC10096F4D5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DebtMessages;
+			productName = DebtMessages;
+			productReference = 749408E12F101AC10096F4D5 /* DebtMessages.appex */;
+			productType = "com.apple.product-type.app-extension.messages";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -356,6 +419,12 @@
 						CreatedOnToolsVersion = 15.2;
 						TestTargetID = 74729E7B2EB3C98F00D41A34;
 					};
+					749408C52F10195F0096F4D5 = {
+						CreatedOnToolsVersion = 15.2;
+					};
+					749408E02F101AC10096F4D5 = {
+						CreatedOnToolsVersion = 15.2;
+					};
 				};
 			};
 			buildConfigurationList = 74729E772EB3C98F00D41A34 /* Build configuration list for PBXProject "apka" */;
@@ -374,6 +443,8 @@
 				74729E7B2EB3C98F00D41A34 /* apka */,
 				74729E8C2EB3C99000D41A34 /* apkaTests */,
 				74729E962EB3C99000D41A34 /* apkaUITests */,
+				749408C52F10195F0096F4D5 /* IMessageExtension */,
+				749408E02F101AC10096F4D5 /* DebtMessages */,
 			);
 		};
 /* End PBXProject section */
@@ -396,6 +467,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		74729E952EB3C99000D41A34 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		749408C42F10195F0096F4D5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		749408DF2F101AC10096F4D5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -430,7 +515,6 @@
 				74DC4B8A2ED78F440098ADA8 /* Countdown.swift in Sources */,
 				74DC4B882ED78F340098ADA8 /* CalendarItem.swift in Sources */,
 				749408B42EF446B60096F4D5 /* AddDebtView.swift in Sources */,
-				74DC4B942ED7972E0098ADA8 /* GameSession.swift in Sources */,
 				74DC4BB02ED7984C0098ADA8 /* BillardGameView.swift in Sources */,
 				749408B82EF446DF0096F4D5 /* MyFinancesView.swift in Sources */,
 				74729E822EB3C98F00D41A34 /* ContentView.swift in Sources */,
@@ -459,6 +543,20 @@
 			files = (
 				74729E9C2EB3C99000D41A34 /* apkaUITests.swift in Sources */,
 				74729E9E2EB3C99000D41A34 /* apkaUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		749408C22F10195F0096F4D5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		749408DD2F101AC10096F4D5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -750,6 +848,116 @@
 			};
 			name = Release;
 		};
+		749408D72F1019610096F4D5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = IMessageExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = IMessageExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = R.apka.IMessageExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		749408D82F1019610096F4D5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = IMessageExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = IMessageExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = R.apka.IMessageExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		749408F02F101AC20096F4D5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DebtMessages/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DebtMessages;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = R.apka.DebtMessages;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		749408F12F101AC20096F4D5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "iMessage App Icon";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DebtMessages/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DebtMessages;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = R.apka.DebtMessages;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -785,6 +993,24 @@
 			buildConfigurations = (
 				74729EA82EB3C99000D41A34 /* Debug */,
 				74729EA92EB3C99000D41A34 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		749408D92F1019610096F4D5 /* Build configuration list for PBXNativeTarget "IMessageExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				749408D72F1019610096F4D5 /* Debug */,
+				749408D82F1019610096F4D5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		749408EF2F101AC20096F4D5 /* Build configuration list for PBXNativeTarget "DebtMessages" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				749408F02F101AC20096F4D5 /* Debug */,
+				749408F12F101AC20096F4D5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

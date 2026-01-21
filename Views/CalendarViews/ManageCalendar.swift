@@ -1,39 +1,30 @@
 import SwiftUI
 
 struct ManageCalendar: View {
-    @ObservedObject var viewModel: CalendarViewModel // ODBIERAMY viewModel
-    @State private var showingCreditsAddView = false
-    @State private var showingCreditsEditView = false
+    @ObservedObject var viewModel: CalendarViewModel
+    @State private var showingAddView = false
+    @State private var showingEditView = false
     
     var body: some View {
         HStack(spacing: 15) {
-            Button("Dodaj rozgrywke") {
-                showingCreditsAddView.toggle()
+            Button("Dodaj rozgrywkę") {
+                showingAddView.toggle()
             }
-            .foregroundColor(.black)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(Color.white)
-            .cornerRadius(10)
-            .padding()
-            .sheet(isPresented: $showingCreditsAddView) {
-                AddGameView(viewModel: viewModel) // PRZEKAZUJEMY viewModel
+            .buttonStyle(.bordered).foregroundColor(.blue).tint(.gray)
+            .sheet(isPresented: $showingAddView) {
+                AddGameView(viewModel: viewModel)
                     .presentationDetents([.medium, .large])
             }
             
-            Button("Edytuj rozgrywke") {
-                showingCreditsEditView.toggle()
+            Button("Edytuj rozgrywkę") {
+                showingEditView.toggle()
             }
-            .foregroundColor(.black)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(Color.white)
-            .cornerRadius(10)
-            .padding()
-            .sheet(isPresented: $showingCreditsEditView) {
-                EditGameView(viewModel: viewModel) // PRZEKAZUJEMY viewModel
+            .buttonStyle(.bordered).foregroundColor(.blue).tint(.gray)
+            .sheet(isPresented: $showingEditView) {
+                EditGameView(viewModel: viewModel)
                     .presentationDetents([.medium, .large])
             }
         }
+        .padding()
     }
 }

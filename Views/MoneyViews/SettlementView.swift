@@ -1,9 +1,13 @@
 import SwiftUI
+import SwiftData
 
 struct SettlementView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     @ObservedObject var gameViewModel: GameViewModel
     @ObservedObject var moneyViewModel: MoneyViewModel
+    let players: [Player] // ✅ przekazane z rodzica
+    let debts: [Debt]     // ✅ przekazane z rodzica
     
     @State private var selectedFromPlayerId: UUID?
     @State private var selectedToPlayerId: UUID?
@@ -11,11 +15,11 @@ struct SettlementView: View {
     @State private var description = "Rozliczenie"
     
     var selectedFromPlayer: Player? {
-        gameViewModel.players.first { $0.id == selectedFromPlayerId }
+        players.first { $0.id == selectedFromPlayerId }
     }
     
     var selectedToPlayer: Player? {
-        gameViewModel.players.first { $0.id == selectedToPlayerId }
+        players.first { $0.id == selectedToPlayerId }
     }
     
     var isFormValid: Bool {
@@ -27,21 +31,17 @@ struct SettlementView: View {
     }
     
     // Pobierz sugerowane rozliczenia na podstawie długów
-    // Pobierz sugerowane rozliczenia na podstawie długów
     var suggestedSettlements: [SuggestedSettlement] {
         var suggestions: [SuggestedSettlement] = []
         
-        for player1 in gameViewModel.players {
-            for player2 in gameViewModel.players where player1.id != player2.id {
-                let balance1 = moneyViewModel.calculateNetBalance(for: player1.id, players: gameViewModel.players)
-                let balance2 = moneyViewModel.calculateNetBalance(for: player2.id, players: gameViewModel.players)
+        for player1 in players {
+            for player2 in players where player1.id != player2.id {
+                let balance1 = moneyViewModel.calculateNetBalance(for: player1.id, debts: debts)
+                let balance2 = moneyViewModel.calculateNetBalance(for: player2.id, debts: debts)
                 
-                // Jeśli player1 ma dodatnie saldo (należności), a player2 ujemne (długi)
                 if balance1 > 0 && balance2 < 0 {
-                    // Oblicz jaką kwotę player2 może oddać player1
                     let amount = min(balance1, abs(balance2))
                     if amount > 0 {
-                        // Używamy String(format:) zamiast specifier w interpolacji
                         let reason = "Saldo: \(player2.nick): \(String(format: "%.2f", balance2)) zł, \(player1.nick): \(String(format: "%.2f", balance1)) zł"
                         
                         suggestions.append(
@@ -66,7 +66,7 @@ struct SettlementView: View {
                 Section(header: Text("Rozliczenie")) {
                     Picker("Od kogo", selection: $selectedFromPlayerId) {
                         Text("Wybierz...").tag(nil as UUID?)
-                        ForEach(gameViewModel.players) { player in
+                        ForEach(players) { player in
                             PlayerPickerRow(player: player)
                                 .tag(player.id as UUID?)
                         }
@@ -75,7 +75,7 @@ struct SettlementView: View {
                     
                     Picker("Do kogo", selection: $selectedToPlayerId) {
                         Text("Wybierz...").tag(nil as UUID?)
-                        ForEach(gameViewModel.players.filter { $0.id != selectedFromPlayerId }) { player in
+                        ForEach(players.filter { $0.id != selectedFromPlayerId }) { player in
                             PlayerPickerRow(player: player)
                                 .tag(player.id as UUID?)
                         }
@@ -85,7 +85,6 @@ struct SettlementView: View {
                     HStack {
                         TextField("Kwota", text: $amount)
                             .keyboardType(.decimalPad)
-                        
                         Text("zł")
                             .foregroundColor(.gray)
                     }
@@ -100,10 +99,8 @@ struct SettlementView: View {
                                 Text("\(fromPlayer.nick)")
                                     .font(.headline)
                                     .foregroundColor(.red)
-                                
                                 Text("→")
                                     .foregroundColor(.gray)
-                                
                                 Text("\(toPlayer.nick)")
                                     .font(.headline)
                                     .foregroundColor(.green)
@@ -114,9 +111,7 @@ struct SettlementView: View {
                             HStack {
                                 Text("Kwota:")
                                     .foregroundColor(.gray)
-                                
                                 Spacer()
-                                
                                 Text("\(Double(amount) ?? 0, specifier: "%.2f") zł")
                                     .font(.title2)
                                     .fontWeight(.bold)
@@ -145,7 +140,7 @@ struct SettlementView: View {
                 
                 // Aktywne długi między wybranymi graczami
                 if let fromId = selectedFromPlayerId, let toId = selectedToPlayerId {
-                    let debtsBetween = moneyViewModel.debts.filter { debt in
+                    let debtsBetween = debts.filter { debt in
                         (debt.creditorId == toId && debt.debtorId == fromId && !debt.isSettled) ||
                         (debt.creditorId == fromId && debt.debtorId == toId && !debt.isSettled)
                     }
@@ -153,7 +148,7 @@ struct SettlementView: View {
                     if !debtsBetween.isEmpty {
                         Section(header: Text("📋 Aktywne długi")) {
                             ForEach(debtsBetween) { debt in
-                                DebtSettlementRow(debt: debt, players: gameViewModel.players)
+                                DebtSettlementRow(debt: debt, players: players)
                             }
                         }
                     }
@@ -163,9 +158,7 @@ struct SettlementView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Anuluj") {
-                        dismiss()
-                    }
+                    Button("Anuluj") { dismiss() }
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -174,24 +167,23 @@ struct SettlementView: View {
                            let toId = selectedToPlayerId,
                            let amountValue = Double(amount) {
                             
-                            // Dodaj rozliczenie
                             moneyViewModel.addSettlement(
                                 fromPlayerId: fromId,
                                 toPlayerId: toId,
                                 amount: amountValue,
-                                description: description
+                                description: description,
+                                context: context
                             )
                             
-                            // Automatycznie oznacz odpowiednie długi jako rozliczone
-                            let debtsToSettle = moneyViewModel.debts.filter { debt in
+                            // Automatycznie oznacz odpowiednie długi
+                            let debtsToSettle = debts.filter { debt in
                                 debt.creditorId == toId &&
                                 debt.debtorId == fromId &&
                                 !debt.isSettled &&
                                 debt.amount <= amountValue
                             }
-                            
                             for debt in debtsToSettle {
-                                moneyViewModel.settleDebt(debtId: debt.id)
+                                moneyViewModel.settleDebt(debt: debt, context: context)
                             }
                             
                             dismiss()
@@ -204,6 +196,7 @@ struct SettlementView: View {
     }
 }
 
+// MARK: - Suggested Settlement
 struct SuggestedSettlement: Identifiable {
     let id = UUID()
     let fromPlayer: Player
@@ -219,7 +212,6 @@ struct SuggestedSettlementRow: View {
     var body: some View {
         Button(action: onSelect) {
             HStack {
-                // Avatary
                 HStack(spacing: -5) {
                     Image(systemName: suggestion.fromPlayer.avatarName)
                         .font(.caption)
@@ -240,11 +232,9 @@ struct SuggestedSettlementRow: View {
                     Text("\(suggestion.fromPlayer.nick) → \(suggestion.toPlayer.nick)")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    
                     Text("\(suggestion.amount, specifier: "%.2f") zł")
                         .font(.caption)
                         .foregroundColor(.blue)
-                    
                     Text(suggestion.reason)
                         .font(.caption2)
                         .foregroundColor(.gray)
@@ -252,7 +242,6 @@ struct SuggestedSettlementRow: View {
                 }
                 
                 Spacer()
-                
                 Image(systemName: "arrow.right.circle.fill")
                     .foregroundColor(.blue)
             }
@@ -262,6 +251,7 @@ struct SuggestedSettlementRow: View {
     }
 }
 
+// MARK: - Debt Settlement Row
 struct DebtSettlementRow: View {
     let debt: Debt
     let players: [Player]
@@ -279,9 +269,7 @@ struct DebtSettlementRow: View {
             if let creditor = creditor, let debtor = debtor {
                 Text("\(debtor.nick) → \(creditor.nick)")
                     .font(.caption)
-                
                 Spacer()
-                
                 Text("\(debt.amount, specifier: "%.2f") zł")
                     .font(.caption)
                     .foregroundColor(.red)
@@ -290,5 +278,4 @@ struct DebtSettlementRow: View {
         .padding(.vertical, 5)
     }
 }
-
 

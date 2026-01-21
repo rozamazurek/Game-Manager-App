@@ -1,26 +1,29 @@
 import Foundation
+import SwiftData
+import SwiftUI
 
-struct GameExpense: Identifiable, Codable {
-    let id: UUID
-    let payerId: UUID     // kto zapłacił
-    let totalAmount: Double
-    let description: String
-    let date: Date
-    let gameType: String
-    let participants: [UUID]  // lista ID graczy którzy uczestniczyli
-    let splitAmount: Double   // kwota na osobę
+@Model
+class GameExpense: Identifiable {
+    @Attribute(.unique) var id: UUID
+    var payerId: UUID
+    var totalAmount: Double
+    var expenseDescription: String
+    var date: Date
+    var gameType: String
+    var participants: [UUID]
+    var splitAmount: Double
     
     init(id: UUID = UUID(),
          payerId: UUID,
          totalAmount: Double,
-         description: String,
+         expenseDescription: String,
          date: Date = Date(),
          gameType: String,
          participants: [UUID]) {
         self.id = id
         self.payerId = payerId
         self.totalAmount = totalAmount
-        self.description = description
+        self.expenseDescription = expenseDescription
         self.date = date
         self.gameType = gameType
         self.participants = participants

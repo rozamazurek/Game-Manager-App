@@ -1,40 +1,44 @@
 import Foundation
 import SwiftUI
+import SwiftData
 
 class BillardViewModel: ObservableObject {
     @ObservedObject var gameViewModel: GameViewModel
-    
+
     @Published var selectedPlayers: [Player] = []
     @Published var gamesWinned: String = ""
     @Published var allGames: String = ""
-    
+
     init(gameViewModel: GameViewModel) {
         self.gameViewModel = gameViewModel
     }
-    
-    func addBillardPoints(player: Player) {
+
+    // Dodawanie punktów – teraz gracz przekazywany z widoku
+    func addBillardPoints(player: Player, context: ModelContext) {
         let pointsToAdd = calculatePointsBillard(
             gamesWinned: Int(gamesWinned) ?? 0,
             allGames: Int(allGames) ?? 0
         )
-        addPointsToPlayer(pointsToAdd: pointsToAdd, player: player)
+        
+        // zmiana bezpośrednio w obiekcie Player
+        player.totalPoints += pointsToAdd
+        player.gamesPlayed += 1
+        
+        try? context.save() // zapis w SwiftData
     }
-    
-    private func addPointsToPlayer(pointsToAdd: Int, player: Player) {
-        if let index = gameViewModel.players.firstIndex(where: { $0.id == player.id }) {
-            gameViewModel.players[index].totalPoints += pointsToAdd
-            gameViewModel.players[index].gamesPlayed += 1
-        }
-    }
-    
-    public func calculatePointsBillard(gamesWinned: Int, allGames: Int) -> Int {
-        let basePoints = (gamesWinned%(allGames+1))*10
+
+    func calculatePointsBillard(
+        gamesWinned: Int,
+        allGames: Int
+    ) -> Int {
+        let basePoints = allGames > 0 ? (gamesWinned % (allGames + 1)) * 10 : 0
         return max(basePoints, 0)
     }
-    
+
     func resetForm() {
         gamesWinned = ""
         allGames = ""
         selectedPlayers.removeAll()
     }
 }
+

@@ -1,21 +1,51 @@
 import SwiftUI
+import SwiftData
 
 struct MyFinancesView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     @ObservedObject var gameViewModel: GameViewModel
     @ObservedObject var moneyViewModel: MoneyViewModel
+    let players: [Player]
+    let debts: [Debt]
+    let settlements: [Settlement]
+    // Aktualny gracz
+    var currentPlayer: Player? { players.first }
     
-    // Zakładam, że aktualny użytkownik to pierwszy gracz
-    var currentPlayer: Player? {
-        gameViewModel.players.first
+    // MARK: - Computed properties wyciągnięte poza body
+    var currentBalance: Double {
+        guard let player = currentPlayer else { return 0 }
+        return moneyViewModel.calculateNetBalance(for: player.id, debts: debts)
     }
     
+    var balanceColor: Color {
+        currentBalance >= 0 ? .green : .red
+    }
+    
+    var owedToPlayer: [Debt] {
+        guard let player = currentPlayer else { return [] }
+        return moneyViewModel.getDebtsForPlayer(playerId: player.id, debts: debts).0
+    }
+    
+    var playerOwes: [Debt] {
+        guard let player = currentPlayer else { return [] }
+        return moneyViewModel.getDebtsForPlayer(playerId: player.id, debts: debts).1
+    }
+    
+    var mySettlements: [Settlement] {
+        guard let player = currentPlayer else { return [] }
+        return settlements.filter {
+            $0.fromPlayerId == player.id || $0.toPlayerId == player.id
+        }
+    }
+    
+    // MARK: - Body
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
                     if let player = currentPlayer {
-                        // Header
+                        // HEADER
                         VStack(spacing: 15) {
                             Image(systemName: player.avatarName)
                                 .font(.system(size: 50))
@@ -25,16 +55,15 @@ struct MyFinancesView: View {
                                 .font(.title)
                                 .fontWeight(.bold)
                             
-                            let balance = moneyViewModel.calculateNetBalance(for: player.id, players: gameViewModel.players)
-                            Text("Saldo: \(balance, specifier: "%.2f") zł")
+                            Text("Saldo: \(String(format: "%.2f", currentBalance)) zł")
                                 .font(.title2)
                                 .fontWeight(.semibold)
-                                .foregroundColor(balance >= 0 ? .green : .red)
+                                .foregroundColor(balanceColor)
                                 .padding(.horizontal, 30)
                                 .padding(.vertical, 10)
                                 .background(
                                     Capsule()
-                                        .fill(balance >= 0 ? Color.green.opacity(0.1) : Color.red.opacity(0.1))
+                                        .fill(balanceColor.opacity(0.1))
                                 )
                         }
                         .padding()
@@ -43,61 +72,51 @@ struct MyFinancesView: View {
                         .shadow(color: .gray.opacity(0.1), radius: 5)
                         .padding(.horizontal)
                         
-                        // Należności (inni są mi winni)
-                        let (owedToPlayer, playerOwes) = moneyViewModel.getDebtsForPlayer(
-                            playerId: player.id,
-                            players: gameViewModel.players
-                        )
-                        
+                        // Należności
                         if !owedToPlayer.isEmpty {
                             DebtsSectionView(
                                 title: "📥 Należności",
                                 debts: owedToPlayer,
-                                players: gameViewModel.players,
+                                players: players,
                                 isOwedToMe: true,
-                                onSettle: { debtId in
-                                    moneyViewModel.settleDebt(debtId: debtId)
+                                onSettle: { debt in
+                                    moneyViewModel.settleDebt(debt: debt, context: context)
                                 }
                             )
-                            .padding(.horizontal)
                         }
                         
-                        // Moje długi (ja jestem winien)
+                        // Moje długi
                         if !playerOwes.isEmpty {
                             DebtsSectionView(
                                 title: "📤 Moje długi",
                                 debts: playerOwes,
-                                players: gameViewModel.players,
+                                players: players,
                                 isOwedToMe: false,
-                                onSettle: { debtId in
-                                    moneyViewModel.settleDebt(debtId: debtId)
+                                onSettle: { debt in
+                                    moneyViewModel.settleDebt(debt: debt, context: context)
                                 }
                             )
-                            .padding(.horizontal)
                         }
                         
+                        // Brak długów
                         if owedToPlayer.isEmpty && playerOwes.isEmpty {
                             EmptyStateView(
                                 icon: "checkmark.circle",
                                 title: "Brak zaległości",
                                 message: "Wszystko jest rozliczone!"
                             )
-                            .padding(.horizontal)
                         }
                         
                         // Historia rozliczeń
-                        let mySettlements = moneyViewModel.settlements.filter {
-                            $0.fromPlayerId == player.id || $0.toPlayerId == player.id
-                        }
-                        
                         if !mySettlements.isEmpty {
                             SettlementHistoryView(
                                 settlements: mySettlements,
-                                players: gameViewModel.players
+                                players: players
                             )
-                            .padding(.horizontal)
                         }
+                        
                     } else {
+                        // Brak graczy
                         VStack(spacing: 20) {
                             Image(systemName: "person.slash")
                                 .font(.system(size: 60))
@@ -121,21 +140,23 @@ struct MyFinancesView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Gotowe") {
-                        dismiss()
-                    }
+                    Button("Gotowe") { dismiss() }
                 }
             }
         }
     }
 }
 
+// MARK: - Reszta kodu pozostaje BEZ ZMIAN (DebtsSectionView, DebtDetailRow, SettlementHistoryView, SettlementRow, EmptyStateView)
+
+
+// MARK: - Debts Section
 struct DebtsSectionView: View {
     let title: String
     let debts: [Debt]
     let players: [Player]
     let isOwedToMe: Bool
-    let onSettle: (UUID) -> Void
+    let onSettle: (Debt) -> Void
     
     var totalAmount: Double {
         debts.reduce(0) { $0 + $1.amount }
@@ -165,7 +186,7 @@ struct DebtsSectionView: View {
                     debt: debt,
                     players: players,
                     isOwedToMe: isOwedToMe,
-                    onSettle: { onSettle(debt.id) }
+                    onSettle: { onSettle(debt) }
                 )
             }
         }
@@ -176,6 +197,7 @@ struct DebtsSectionView: View {
     }
 }
 
+// MARK: - Debt Row
 struct DebtDetailRow: View {
     let debt: Debt
     let players: [Player]
@@ -184,21 +206,14 @@ struct DebtDetailRow: View {
     
     var otherPlayer: Player? {
         if isOwedToMe {
-            // Kto mi jest winien
-            return players.first { $0.id == debt.debtorId }
+            players.first { $0.id == debt.debtorId }
         } else {
-            // Komu ja jestem winien
-            return players.first { $0.id == debt.creditorId }
+            players.first { $0.id == debt.creditorId }
         }
-    }
-    
-    var arrowDirection: String {
-        isOwedToMe ? "←" : "→"
     }
     
     var body: some View {
         HStack(spacing: 15) {
-            // Avatar
             if let otherPlayer = otherPlayer {
                 Image(systemName: otherPlayer.avatarName)
                     .font(.title3)
@@ -210,22 +225,15 @@ struct DebtDetailRow: View {
                 if let otherPlayer = otherPlayer {
                     HStack(spacing: 5) {
                         if isOwedToMe {
-                            Text("\(otherPlayer.nick)")
-                                .font(.headline)
-                            Text("jest mi winien")
-                                .font(.caption)
-                                .foregroundColor(.gray)
+                            Text("\(otherPlayer.nick)").font(.headline)
+                            Text("jest mi winien").font(.caption).foregroundColor(.gray)
                         } else {
-                            Text("Jestem winien")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                            Text("\(otherPlayer.nick)")
-                                .font(.headline)
+                            Text("Jestem winien").font(.caption).foregroundColor(.gray)
+                            Text("\(otherPlayer.nick)").font(.headline)
                         }
                     }
                 }
-                
-                Text(debt.description)
+                Text(debt.debtDescription)
                     .font(.caption)
                     .foregroundColor(.gray)
                     .lineLimit(1)
@@ -257,6 +265,7 @@ struct DebtDetailRow: View {
     }
 }
 
+// MARK: - Settlement History
 struct SettlementHistoryView: View {
     let settlements: [Settlement]
     let players: [Player]
@@ -305,17 +314,11 @@ struct SettlementRow: View {
     let settlement: Settlement
     let players: [Player]
     
-    var fromPlayer: Player? {
-        players.first { $0.id == settlement.fromPlayerId }
-    }
-    
-    var toPlayer: Player? {
-        players.first { $0.id == settlement.toPlayerId }
-    }
+    var fromPlayer: Player? { players.first { $0.id == settlement.fromPlayerId } }
+    var toPlayer: Player? { players.first { $0.id == settlement.toPlayerId } }
     
     var body: some View {
         HStack(spacing: 15) {
-            // Avatary
             HStack(spacing: -10) {
                 if let fromPlayer = fromPlayer {
                     Image(systemName: fromPlayer.avatarName)
@@ -343,7 +346,7 @@ struct SettlementRow: View {
                         .fontWeight(.medium)
                 }
                 
-                Text(settlement.description)
+                Text(settlement.settlementDescription)
                     .font(.caption)
                     .foregroundColor(.gray)
                 
@@ -365,6 +368,34 @@ struct SettlementRow: View {
             }
         }
         .padding(.vertical, 8)
+    }
+}
+
+// MARK: - Empty State
+struct EmptyStateView: View {
+    let icon: String
+    let title: String
+    let message: String
+    
+    var body: some View {
+        VStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 50))
+                .foregroundColor(.gray.opacity(0.5))
+            
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.gray)
+            
+            Text(message)
+                .font(.caption)
+                .foregroundColor(.gray)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.white)
+        .cornerRadius(15)
+        .shadow(color: .gray.opacity(0.1), radius: 5)
     }
 }
 

@@ -1,9 +1,12 @@
 import SwiftUI
+import SwiftData
 
 struct AddGameExpenseView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     @ObservedObject var gameViewModel: GameViewModel
     @ObservedObject var moneyViewModel: MoneyViewModel
+    let players: [Player] // ✅ Przekazane z rodzica
     
     @State private var selectedPayerId: UUID?
     @State private var selectedGameType = "Poker"
@@ -14,7 +17,7 @@ struct AddGameExpenseView: View {
     let gameTypes = ["Poker", "Bilard", "Kręgle", "Inne"]
     
     var selectedPayer: Player? {
-        gameViewModel.players.first { $0.id == selectedPayerId }
+        players.first { $0.id == selectedPayerId }
     }
     
     var splitAmount: Double {
@@ -36,7 +39,7 @@ struct AddGameExpenseView: View {
                 Section(header: Text("Kto zapłacił?")) {
                     Picker("Wybierz płatnika", selection: $selectedPayerId) {
                         Text("Wybierz...").tag(nil as UUID?)
-                        ForEach(gameViewModel.players) { player in
+                        ForEach(players) { player in
                             PlayerPickerRow(player: player)
                                 .tag(player.id as UUID?)
                         }
@@ -63,7 +66,7 @@ struct AddGameExpenseView: View {
                 }
                 
                 Section(header: Text("Uczestnicy")) {
-                    ForEach(gameViewModel.players) { player in
+                    ForEach(players) { player in
                         ParticipantRow(
                             player: player,
                             isSelected: selectedParticipantIds.contains(player.id),
@@ -122,7 +125,8 @@ struct AddGameExpenseView: View {
                                 totalAmount: amountValue,
                                 description: expenseDescription.isEmpty ? "Wydatek na \(selectedGameType)" : expenseDescription,
                                 gameType: selectedGameType,
-                                participants: selectedParticipantIds
+                                participants: selectedParticipantIds,
+                                context: context
                             )
                             dismiss()
                         }

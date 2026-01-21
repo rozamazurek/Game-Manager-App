@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import SwiftData
+
 
 @main
 struct apkaApp: App {
@@ -13,5 +15,13 @@ struct apkaApp: App {
         WindowGroup {
             MainTabView()
         }
+        .modelContainer(for: [
+            Player.self,
+            Debt.self,
+            GameExpense.self,
+            Settlement.self,
+            PlayDate.self
+        ])
     }
 }
+
