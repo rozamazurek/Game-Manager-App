@@ -15,7 +15,6 @@ class BowlingViewModel: ObservableObject {
         self.gameViewModel = gameViewModel
     }
 
-    // Dodawanie punktów do pojedynczego gracza
     func addBowlingPoints(player: Player, context: ModelContext) {
         let pointsToAdd = calculatePointsBowling(
             numOfPoints: Int(numOfPoints) ?? 0,
@@ -24,19 +23,11 @@ class BowlingViewModel: ObservableObject {
             totalPlayers: Int(totalPlayers) ?? 1
         )
 
-        // teraz gracz przekazywany jest bezpośrednio z widoku
         player.totalPoints += pointsToAdd
         player.gamesPlayed += 1
-        // zapis w SwiftData
-        try? context.save()
     }
 
-    func calculatePointsBowling(
-        numOfPoints: Int,
-        numOfGames: Int,
-        finalPosition: Int,
-        totalPlayers: Int
-    ) -> Int {
+    func calculatePointsBowling(numOfPoints: Int,numOfGames: Int,finalPosition: Int,totalPlayers: Int) -> Int {
         let basePoints = (totalPlayers - finalPosition + 1) * 10
         let gamePoints = numOfGames > 0 ? (numOfPoints / (numOfGames + 1)) * 10 : 0
         return max(gamePoints + basePoints, 0)

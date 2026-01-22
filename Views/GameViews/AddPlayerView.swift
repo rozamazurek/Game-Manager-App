@@ -56,7 +56,7 @@ struct AddingPlayerView:View{
                                     isSelected: selectedAvatar == avatar,
                                     action: { selectedAvatar = avatar }
                                 )
-                                .id(avatar) // WAŻNE: stabilny identyfikator
+                                .id(avatar)
                             }
                         }
                         .padding(.vertical, 10)
@@ -104,7 +104,7 @@ struct AvatarSelectionButton: View {
                         .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
                 )
         }
-        .buttonStyle(PlainButtonStyle()) // <- kluczowe
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

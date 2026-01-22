@@ -22,16 +22,8 @@ class PokerViewModel: ObservableObject {
             finalPosition: Int(finalPosition) ?? 1,
             totalPlayers: Int(totalPlayers) ?? 1
         )
-        addPointsToPlayer(pointsToAdd: pointsToAdd, player: player, context: context)
-    }
-
-    private func addPointsToPlayer(pointsToAdd: Int, player: Player, context: ModelContext) {
-        // Jeśli player już istnieje w SwiftData, SwiftData śledzi zmiany automatycznie
-        
-            player.totalPoints += pointsToAdd
-            player.gamesPlayed += 1
-            // Nie trzeba insert, SwiftData automatycznie zapisze zmiany przy commit (np. w widoku)
-        
+        player.totalPoints += pointsToAdd
+        player.gamesPlayed += 1
     }
 
     func calculatePointsPoker(numTokens: Int, moneyPut: Int, finalPosition: Int, totalPlayers: Int) -> Int {

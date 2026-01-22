@@ -6,8 +6,8 @@ struct SettlementView: View {
     @Environment(\.modelContext) private var context
     @ObservedObject var gameViewModel: GameViewModel
     @ObservedObject var moneyViewModel: MoneyViewModel
-    let players: [Player] // ✅ przekazane z rodzica
-    let debts: [Debt]     // ✅ przekazane z rodzica
+    let players: [Player] // przekazane z moneyview
+    let debts: [Debt]     // przekazane z moneyview
     
     @State private var selectedFromPlayerId: UUID?
     @State private var selectedToPlayerId: UUID?
@@ -146,7 +146,7 @@ struct SettlementView: View {
                     }
                     
                     if !debtsBetween.isEmpty {
-                        Section(header: Text("📋 Aktywne długi")) {
+                        Section(header: Text(" Aktywne długi")) {
                             ForEach(debtsBetween) { debt in
                                 DebtSettlementRow(debt: debt, players: players)
                             }
@@ -175,7 +175,7 @@ struct SettlementView: View {
                                 context: context
                             )
                             
-                            // Automatycznie oznacz odpowiednie długi
+                            // Automatycznie oznaczeenie odpowiednich długow
                             let debtsToSettle = debts.filter { debt in
                                 debt.creditorId == toId &&
                                 debt.debtorId == fromId &&

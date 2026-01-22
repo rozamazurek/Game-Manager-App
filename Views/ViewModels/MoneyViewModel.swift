@@ -5,7 +5,6 @@ import SwiftData
 
 class MoneyViewModel: ObservableObject {
 
-    // MARK: - Debt Management
 
     func addDebt(creditorId: UUID, debtorId: UUID, amount: Double, description: String, gameSessionId: UUID? = nil, context: ModelContext) {
         let newDebt = Debt(
@@ -16,7 +15,6 @@ class MoneyViewModel: ObservableObject {
             gameSessionId: gameSessionId
         )
         context.insert(newDebt)
-        try? context.save()
     }
 
     func addGameExpense(payerId: UUID, totalAmount: Double, description: String, gameType: String, participants: [UUID], context: ModelContext) {
@@ -46,7 +44,6 @@ class MoneyViewModel: ObservableObject {
 
     func settleDebt(debt: Debt, context: ModelContext) {
         debt.isSettled = true
-        try? context.save()
     }
 
     func addSettlement(fromPlayerId: UUID, toPlayerId: UUID, amount: Double, description: String, context: ModelContext) {
@@ -57,10 +54,8 @@ class MoneyViewModel: ObservableObject {
             settlementDescription: description
         )
         context.insert(settlement)
-        try? context.save()
     }
 
-    // MARK: - Calculations
 
     func calculateNetBalance(for playerId: UUID, debts: [Debt]) -> Double {
         let owedToMe = debts.filter { $0.creditorId == playerId && !$0.isSettled }
@@ -74,7 +69,6 @@ class MoneyViewModel: ObservableObject {
         return (owedToPlayer, playerOwes)
     }
 
-    // MARK: - Totals
 
     func calculateTotals(debts: [Debt], gameExpenses: [GameExpense], settlements: [Settlement]) -> (totalDebt: Double, totalExpenses: Double, totalSettled: Double) {
         let totalDebt = debts.filter { !$0.isSettled }.reduce(0) { $0 + $1.amount }

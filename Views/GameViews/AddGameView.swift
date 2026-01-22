@@ -4,7 +4,7 @@ import SwiftData
 struct AddGameView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-    @ObservedObject var viewModel: CalendarViewModel // ODBIERAMY viewModel
+    @ObservedObject var viewModel: CalendarViewModel
     @State private var gameDate = Date()
     @State private var gameName = ""
     @State private var gameVenue = ""

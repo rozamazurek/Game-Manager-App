@@ -6,7 +6,7 @@ struct AddGameExpenseView: View {
     @Environment(\.modelContext) private var context
     @ObservedObject var gameViewModel: GameViewModel
     @ObservedObject var moneyViewModel: MoneyViewModel
-    let players: [Player] // ✅ Przekazane z rodzica
+    let players: [Player] // przekazane z moneyview
     
     @State private var selectedPayerId: UUID?
     @State private var selectedGameType = "Poker"

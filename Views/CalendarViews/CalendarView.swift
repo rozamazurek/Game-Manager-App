@@ -10,7 +10,7 @@ struct CalendarView: View {
             VStack{
                 CalendarItem(groupedDates: viewModel.groupedDates(from: playDates))
                 ManageCalendar(viewModel: viewModel)
-                Countdown(playDates: playDates) // PRZEKAZUJEMY całą tablicę
+                Countdown(playDates: playDates)
             }
         }
         .sheet(isPresented: $viewModel.showingEditSheet) {

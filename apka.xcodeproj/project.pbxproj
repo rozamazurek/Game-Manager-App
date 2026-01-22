@@ -26,6 +26,11 @@
 		749408BA2EF446F80096F4D5 /* SettlementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749408B92EF446F80096F4D5 /* SettlementView.swift */; };
 		749408C92F10195F0096F4D5 /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 749408C82F10195F0096F4D5 /* Messages.framework */; };
 		749408E22F101AC10096F4D5 /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 749408C82F10195F0096F4D5 /* Messages.framework */; };
+		749408FC2F2134540096F4D5 /* Poker.png in Resources */ = {isa = PBXBuildFile; fileRef = 749408FB2F2134540096F4D5 /* Poker.png */; };
+		749408FE2F2134660096F4D5 /* Money.png in Resources */ = {isa = PBXBuildFile; fileRef = 749408FD2F2134660096F4D5 /* Money.png */; };
+		749409002F21346D0096F4D5 /* Ranking1.png in Resources */ = {isa = PBXBuildFile; fileRef = 749408FF2F21346D0096F4D5 /* Ranking1.png */; };
+		749409022F2134720096F4D5 /* Ranking2.png in Resources */ = {isa = PBXBuildFile; fileRef = 749409012F2134720096F4D5 /* Ranking2.png */; };
+		749409042F2134790096F4D5 /* Settlements.png in Resources */ = {isa = PBXBuildFile; fileRef = 749409032F2134790096F4D5 /* Settlements.png */; };
 		74DC4B7C2ED78E800098ADA8 /* PlayDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B7B2ED78E800098ADA8 /* PlayDate.swift */; };
 		74DC4B7E2ED78E8E0098ADA8 /* MonthSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B7D2ED78E8E0098ADA8 /* MonthSection.swift */; };
 		74DC4B802ED78EA20098ADA8 /* CalendarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74DC4B7F2ED78EA20098ADA8 /* CalendarViewModel.swift */; };
@@ -90,6 +95,12 @@
 		749408C62F10195F0096F4D5 /* IMessageExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = IMessageExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		749408C82F10195F0096F4D5 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = Library/Frameworks/Messages.framework; sourceTree = DEVELOPER_DIR; };
 		749408E12F101AC10096F4D5 /* DebtMessages.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DebtMessages.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		749408F82F2134390096F4D5 /* Calendar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Calendar.png; sourceTree = "<group>"; };
+		749408FB2F2134540096F4D5 /* Poker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Poker.png; sourceTree = "<group>"; };
+		749408FD2F2134660096F4D5 /* Money.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Money.png; sourceTree = "<group>"; };
+		749408FF2F21346D0096F4D5 /* Ranking1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Ranking1.png; sourceTree = "<group>"; };
+		749409012F2134720096F4D5 /* Ranking2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Ranking2.png; sourceTree = "<group>"; };
+		749409032F2134790096F4D5 /* Settlements.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Settlements.png; sourceTree = "<group>"; };
 		74DC4B7B2ED78E800098ADA8 /* PlayDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayDate.swift; sourceTree = "<group>"; };
 		74DC4B7D2ED78E8E0098ADA8 /* MonthSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthSection.swift; sourceTree = "<group>"; };
 		74DC4B7F2ED78EA20098ADA8 /* CalendarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewModel.swift; sourceTree = "<group>"; };
@@ -156,6 +167,7 @@
 		74729E732EB3C98F00D41A34 = {
 			isa = PBXGroup;
 			children = (
+				749408F52F2133980096F4D5 /* Screenshots */,
 				74DC4B762ED78DFD0098ADA8 /* ViewModels */,
 				74DC4B772ED78E080098ADA8 /* Views */,
 				74DC4B782ED78E0F0098ADA8 /* Models */,
@@ -253,19 +265,25 @@
 			path = GameViews;
 			sourceTree = "<group>";
 		};
-		749408BF2EF460B20096F4D5 /* RankingViews */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = RankingViews;
-			sourceTree = "<group>";
-		};
 		749408C72F10195F0096F4D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				749408C82F10195F0096F4D5 /* Messages.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		749408F52F2133980096F4D5 /* Screenshots */ = {
+			isa = PBXGroup;
+			children = (
+				749409032F2134790096F4D5 /* Settlements.png */,
+				749408FB2F2134540096F4D5 /* Poker.png */,
+				749409012F2134720096F4D5 /* Ranking2.png */,
+				749408FF2F21346D0096F4D5 /* Ranking1.png */,
+				749408FD2F2134660096F4D5 /* Money.png */,
+				749408F82F2134390096F4D5 /* Calendar.png */,
+			);
+			path = Screenshots;
 			sourceTree = "<group>";
 		};
 		74DC4B762ED78DFD0098ADA8 /* ViewModels */ = {
@@ -285,7 +303,6 @@
 		74DC4B772ED78E080098ADA8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				749408BF2EF460B20096F4D5 /* RankingViews */,
 				749408BD2EF460590096F4D5 /* GameViews */,
 				749408BC2EF45FF30096F4D5 /* CalendarViews */,
 				749408B02EF446900096F4D5 /* MoneyViews */,
@@ -454,6 +471,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				749408FE2F2134660096F4D5 /* Money.png in Resources */,
+				749409022F2134720096F4D5 /* Ranking2.png in Resources */,
+				749409002F21346D0096F4D5 /* Ranking1.png in Resources */,
+				749409042F2134790096F4D5 /* Settlements.png in Resources */,
+				749408FC2F2134540096F4D5 /* Poker.png in Resources */,
 				74729E882EB3C99000D41A34 /* Preview Assets.xcassets in Resources */,
 				74729E842EB3C99000D41A34 /* Assets.xcassets in Resources */,
 			);

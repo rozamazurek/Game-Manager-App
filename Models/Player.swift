@@ -3,7 +3,7 @@ import SwiftUI
 import SwiftData
 
 @Model
-class Player: Identifiable, Hashable {
+class Player: Identifiable {
     @Attribute(.unique) var id: UUID
     var nick: String
     var totalPoints: Int
@@ -18,12 +18,8 @@ class Player: Identifiable, Hashable {
         self.avatarName = avatarName
     }
     
-    // Hashable
-    func hash(into hasher: inout Hasher) { hasher.combine(id) }
-    static func == (lhs: Player, rhs: Player) -> Bool { lhs.id == rhs.id }
 }
 
-// Avatary pozostają bez zmian
 struct Avatar {
     static let allAvatars = [
         "person.circle.fill", "person.fill", "person.2.fill",

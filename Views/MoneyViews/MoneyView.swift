@@ -353,7 +353,6 @@ struct ActionButtonContent: View {
     }
 }
 
-// MARK: - Recent Debts
 struct RecentDebtsView: View {
     let debts: [Debt]
     let players: [Player]
@@ -463,7 +462,6 @@ struct DebtRow: View {
     }
 }
 
-// MARK: - Recent Expenses
 struct RecentExpensesView: View {
     let expenses: [GameExpense]
     let players: [Player]

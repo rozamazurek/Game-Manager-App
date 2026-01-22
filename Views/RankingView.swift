@@ -101,7 +101,6 @@ struct RankingView: View {
 }
 
 
-// MARK: - Header
 struct HeaderView: View {
     let currentViewIndex: Int
     
@@ -127,7 +126,7 @@ struct HeaderView: View {
     }
 }
 
-// MARK: - Podium
+
 struct PodiumViewContent: View {
     let topPlayers: [Player]
     let sortedPlayers: [Player]
@@ -221,7 +220,7 @@ struct PodiumStand: View {
     }
 }
 
-// MARK: - List View
+
 struct ListViewContent: View {
     let sortedPlayers: [Player]
     
@@ -278,7 +277,6 @@ struct DetailedPlayerRow: View {
     }
 }
 
-// MARK: - Stats
 struct StatsViewContent: View {
     let players: [Player]
     
